@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="quanshoppingcart-backend" target="11" />
+      <module name="quanshoppingcart-common" target="11" />
+      <module name="quanshoppingcart-frontend" target="11" />
+      <module name="quanshoppingcart-project" target="1.5" />
+      <module name="quanshoppingcart-webparent" target="11" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="quanshoppingcart-backend" options="-parameters" />
+      <module name="quanshoppingcart-common" options="-parameters" />
+      <module name="quanshoppingcart-frontend" options="-parameters" />
+    </option>
+  </component>
+</project>

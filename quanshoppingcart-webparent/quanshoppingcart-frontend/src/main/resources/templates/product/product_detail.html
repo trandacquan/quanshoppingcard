@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<head th:replace="fragments :: page_head(${pageTitle}, 'tag')" />
+</head>
+
+<body>
+<div class="container-fluid">
+	<div th:replace="navigation :: header_menu"></div>
+	<div th:replace="navigation :: search_nav"></div>
+	<div th:replace="breadcrumb :: content"></div>
+
+	<div class="row">
+		<div class="col-sm">
+			<div>
+				<img id="bigImage" th:src="@{${product.mainImagePath}}" class="img-fluid" index="0" /><!-- hình to hiển thị ở trên -->
+			</div>
+			
+			<div class="row justify-content-center"><!-- các hình nhỏ hiển thị ở dưới, mainImage ở vị trí đầu tiên, tiếp theo là các extraImages -->
+				<div class="m-2 border border-secondary p-1">
+					<img class="image-thumbnail" th:src="@{${product.mainImagePath}}" height="50" index="0" />
+				</div>
+				
+				<th:block th:each="extraImage, status : ${product.images}">
+					<div class="m-2 border border-secondary p-1">
+						<img class="image-thumbnail" th:src="@{${extraImage.imagePath}}" height="50"
+							th:index="${status.count}" />
+					</div>				
+				</th:block>
+			</div>
+		</div>
+		
+		<div class="col-sm">
+			<div>
+				<h2>[[${product.name}]]</h2>
+			</div>
+			
+			<div>
+				<span>Brand: [[${product.brand.name}]]</span>
+			</div>
+			
+			<div>
+				List Price:
+				<span th:if="${product.discountPercent <= 0}">$ [[${product.price}]]</span>
+				<del th:if="${product.discountPercent > 0}"><span>$ [[${product.price}]]</span></del>
+			</div>
+			
+			<div th:if="${product.discountPercent > 0}">
+				Price: <span style="font-size: larger; color: darkred">$ [[${product.discountPrice}]]</span>
+				([[${#numbers.formatDecimal(product.discountPercent, 1, 'COMMA', 2, 'POINT')}]] % off)
+			</div>
+			
+			<div>&nbsp;</div>
+			<div th:utext="${product.shortDescription}"></div>			
+		</div>
+		
+		<div class="col-sm-2">
+			<div>
+				<span th:if="${product.inStock}" class="text-success"><b>In Stock</b></span>
+				<span th:unless="${product.inStock}" class="text-danger"><b>Out of Stock</b></span>
+			</div>
+			
+			<th:block th:if="${product.inStock}"> <!-- nếu inStock = false =>hết product =>ko cho thêm vào cart(giỏ hàng) -->
+				<div th:replace="cart/quantity_control :: quantity_control(1, ${product.id})"></div>
+				
+				<div class="mt-3">
+					<input type="button" value="Add to Cart" id="buttonAdd2Cart" class="btn btn-primary" />
+				</div>
+			</th:block>
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="col-12">
+			<div><hr/></div>
+			<div>
+				<h3>Product Description:</h3>
+			</div>
+			<div th:utext="${product.fullDescription}"></div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-12">
+			<div><hr/></div>
+			<div>
+				<h3>Product Details:</h3>
+			</div>
+			<th:block th:each="detail : ${product.details}">
+				<div>
+					<b>[[${detail.name}]]</b>:
+					<span>[[${detail.value}]]</span>
+				</div>
+			</th:block>
+		</div>
+	</div>
+	
+	<div th:replace="product/images_carousel :: content"></div>
+	
+	<div th:replace="fragments :: modal_dialog"></div>	
+	
+	<div th:replace="navigation :: footer_menu"></div>
+</div>	
+
+<script type="text/javascript">
+	productId = "[[${product.id}]]";//sử dụng trong addToCart()
+	contextPath = "[[@{/}]]";//sử dụng trong addToCart()
+	var csrfHeaderName = "[[${_csrf.headerName}]]";//X-CSRF-TOKEN, nhấn f12 để xem
+	var csrfValue = "[[${_csrf.token}]]";//a11dbd49-400e-481d-b66e-d2c7f66550bc, nhấn f12 để xem
+	
+
+	$(document).ready(function() {
+		bigImage = $("#bigImage");
+		
+		$(".image-thumbnail").mouseover(function() {//khi hover vào một hình bất kỳ thì set nội dung của thẻ có id là bigImage thành hình đang hover 
+			currentImageSource = $(this).attr("src");//lấy giá trị của thuộc tính src hình đang được hover
+			currentImageIndex = $(this).attr("index");//lấy giá trị của thuộc tính index hình đang được hover
+			
+			bigImage.attr("src", currentImageSource);//gán giá trị của thuộc tính src hình đang được hover cho thuộc tính src của bigImage
+			bigImage.attr("index", currentImageIndex);//gán giá trị của thuộc tính index hình đang được hover cho thuộc tính index của bigImage
+		});
+		
+		bigImage.on("click", function() {
+			$("#carouselModal").modal("show");//khi click vào một hình bất kỳ thì hiển thị modal
+			imageIndex = parseInt(bigImage.attr("index"));//lấy giá trị của thuộc tính index hình đang được click vào
+			$("#carouselExampleIndicators").carousel(imageIndex);//carousel có nhiều hình thì nó sẽ hiển thị tại vị trí hình đang click vào
+		});
+	});
+</script>
+
+<script type="text/javascript" th:src="@{/js/jquery.number.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/common_modal.js}"></script>
+<script type="text/javascript" th:src="@{/js/quantity_control.js}"></script>
+<script type="text/javascript" th:src="@{/js/add_to_cart.js}"></script>
+
+</body>
+</html>
